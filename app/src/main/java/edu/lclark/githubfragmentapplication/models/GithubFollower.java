@@ -1,9 +1,12 @@
-package edu.lclark.githubfragmentapplication;
+package edu.lclark.githubfragmentapplication.models;
+
+import android.os.Parcel;
+import android.os.Parcelable;
 
 /**
  * Created by ntille on 2/25/16.
  */
-public class GithubFollower {
+public class GithubFollower implements Parcelable {
 
 
     /**
@@ -43,6 +46,64 @@ public class GithubFollower {
     private String received_events_url;
     private String type;
     private boolean site_admin;
+
+    protected GithubFollower(Parcel in) {
+        login = in.readString();
+        id = in.readInt();
+        avatar_url = in.readString();
+        gravatar_id = in.readString();
+        url = in.readString();
+        html_url = in.readString();
+        followers_url = in.readString();
+        following_url = in.readString();
+        gists_url = in.readString();
+        starred_url = in.readString();
+        subscriptions_url = in.readString();
+        organizations_url = in.readString();
+        repos_url = in.readString();
+        events_url = in.readString();
+        received_events_url = in.readString();
+        type = in.readString();
+        site_admin = in.readByte() != 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(login);
+        dest.writeInt(id);
+        dest.writeString(avatar_url);
+        dest.writeString(gravatar_id);
+        dest.writeString(url);
+        dest.writeString(html_url);
+        dest.writeString(followers_url);
+        dest.writeString(following_url);
+        dest.writeString(gists_url);
+        dest.writeString(starred_url);
+        dest.writeString(subscriptions_url);
+        dest.writeString(organizations_url);
+        dest.writeString(repos_url);
+        dest.writeString(events_url);
+        dest.writeString(received_events_url);
+        dest.writeString(type);
+        dest.writeByte((byte) (site_admin ? 1 : 0));
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Creator<GithubFollower> CREATOR = new Creator<GithubFollower>() {
+        @Override
+        public GithubFollower createFromParcel(Parcel in) {
+            return new GithubFollower(in);
+        }
+
+        @Override
+        public GithubFollower[] newArray(int size) {
+            return new GithubFollower[size];
+        }
+    };
 
     public void setLogin(String login) {
         this.login = login;
@@ -179,4 +240,6 @@ public class GithubFollower {
     public boolean isSite_admin() {
         return site_admin;
     }
+
+
 }

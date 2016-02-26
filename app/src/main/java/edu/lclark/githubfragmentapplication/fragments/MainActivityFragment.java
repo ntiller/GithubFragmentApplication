@@ -1,4 +1,4 @@
-package edu.lclark.githubfragmentapplication;
+package edu.lclark.githubfragmentapplication.fragments;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -14,11 +14,17 @@ import java.util.ArrayList;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import edu.lclark.githubfragmentapplication.activities.MainActivity;
+import edu.lclark.githubfragmentapplication.models.GithubFollower;
+import edu.lclark.githubfragmentapplication.GithubRecyclerViewAdapter;
+import edu.lclark.githubfragmentapplication.NetworkAsyncTask;
+import edu.lclark.githubfragmentapplication.R;
+
 
 /**
  * A placeholder fragment containing a simple view.
  */
-public class MainActivityFragment extends Fragment implements NetworkAsyncTask.GithubListener {
+public class MainActivityFragment extends Fragment implements NetworkAsyncTask.GithubListener, GithubRecyclerViewAdapter.RowClickListener {
 
     @Bind(R.id.fragment_main_recyclerview)
     RecyclerView mRecyclerView;
@@ -27,6 +33,13 @@ public class MainActivityFragment extends Fragment implements NetworkAsyncTask.G
     GithubRecyclerViewAdapter mAdapter;
 
     ArrayList<GithubFollower> mFollowers;
+    private FollowerSelectedListener mListener;
+
+
+
+    public interface FollowerSelectedListener {
+        void onFollowerSelected(GithubFollower follower);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -38,10 +51,13 @@ public class MainActivityFragment extends Fragment implements NetworkAsyncTask.G
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
 
-        mAdapter = new GithubRecyclerViewAdapter(null);
+        mAdapter = new GithubRecyclerViewAdapter(mFollowers, this);
         mRecyclerView.setAdapter(mAdapter);
 
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
+
+        mListener = (MainActivity) getActivity();
+
 
         return rootView;
     }
@@ -69,5 +85,11 @@ public class MainActivityFragment extends Fragment implements NetworkAsyncTask.G
     public void onGithubFollowersRetrieved(@Nullable ArrayList<GithubFollower> followers) {
         mFollowers = followers;
         mAdapter.setFollowers(followers);
+    }
+
+
+    @Override
+    public void onRowClicked(int position) {
+        mListener.onFollowerSelected(mAdapter.getItem(position));
     }
 }

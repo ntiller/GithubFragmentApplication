@@ -1,4 +1,4 @@
-package edu.lclark.githubfragmentapplication;
+package edu.lclark.githubfragmentapplication.models;
 
 import com.google.gson.annotations.SerializedName;
 

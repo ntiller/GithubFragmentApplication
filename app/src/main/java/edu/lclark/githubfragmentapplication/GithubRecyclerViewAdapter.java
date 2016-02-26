@@ -13,16 +13,23 @@ import java.util.ArrayList;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import edu.lclark.githubfragmentapplication.models.GithubFollower;
 
 /**
  * Created by ntille on 2/23/16.
  */
 public class GithubRecyclerViewAdapter extends RecyclerView.Adapter<GithubRecyclerViewAdapter.GithubViewHolder> {
 
+    private RowClickListener mListener;
     private ArrayList<GithubFollower> mFollowers;
 
-    public GithubRecyclerViewAdapter(ArrayList<GithubFollower> followers) {
+    public interface RowClickListener {
+        void onRowClicked(int position);
+    }
+
+    public GithubRecyclerViewAdapter(ArrayList<GithubFollower> followers, RowClickListener listener) {
         mFollowers = followers;
+        mListener = listener;
     }
 
     @Override
@@ -33,7 +40,7 @@ public class GithubRecyclerViewAdapter extends RecyclerView.Adapter<GithubRecycl
     }
 
     @Override
-    public void onBindViewHolder(GithubViewHolder holder, int position) {
+    public void onBindViewHolder(final GithubViewHolder holder, int position) {
         GithubFollower follower = mFollowers.get(position);
         holder.textView.setText(follower.getLogin());
 
@@ -42,11 +49,22 @@ public class GithubRecyclerViewAdapter extends RecyclerView.Adapter<GithubRecycl
                 .fit()
                 .centerInside()
                 .into(holder.imageView);
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mListener.onRowClicked(holder.getAdapterPosition());
+            }
+        });
     }
 
     public void setFollowers(ArrayList<GithubFollower> followers) {
         mFollowers = followers;
         notifyItemRangeInserted(0, mFollowers.size());
+    }
+
+    public GithubFollower getItem(int position) {
+        return mFollowers == null ? null : mFollowers.get(position);
     }
 
     @Override
