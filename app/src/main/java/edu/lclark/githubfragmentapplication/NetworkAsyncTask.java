@@ -4,27 +4,27 @@ import android.os.AsyncTask;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.google.gson.Gson;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Created by ntille on 2/16/16.
  */
-public class NetworkAsyncTask extends AsyncTask<String, Integer, JSONArray> {
+public class NetworkAsyncTask extends AsyncTask<String, Integer, ArrayList<GithubFollower>> {
 
 
     public static final String TAG = NetworkAsyncTask.class.getSimpleName();
     private final GithubListener mListener;
 
     public interface GithubListener {
-        void onGithubAccountRetrieved(@Nullable JSONArray githubAccount);
+        void onGithubFollowersRetrieved(@Nullable ArrayList<GithubFollower> followers);
     }
 
     public NetworkAsyncTask(GithubListener listener) {
@@ -38,10 +38,10 @@ public class NetworkAsyncTask extends AsyncTask<String, Integer, JSONArray> {
     }
 
     @Override
-    protected JSONArray doInBackground(String... params) {
+    protected ArrayList<GithubFollower> doInBackground(String... params) {
 
         StringBuilder responseBuilder = new StringBuilder();
-        JSONArray jsonArray = null;
+        ArrayList<GithubFollower> followers = null;
         if (params.length == 0) {
             return null;
         }
@@ -49,7 +49,7 @@ public class NetworkAsyncTask extends AsyncTask<String, Integer, JSONArray> {
         String userId = params[0];
 
         try {
-            URL url = new URL("https://api.github.com/users/" + userId + "/subscriptions");
+            URL url = new URL("https://api.github.com/users/" + userId + "/followers");
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
 
@@ -68,49 +68,25 @@ public class NetworkAsyncTask extends AsyncTask<String, Integer, JSONArray> {
                 }
             }
 
-            jsonArray = new JSONArray(responseBuilder.toString());
+            GithubFollower[] followerArray = new Gson().fromJson(responseBuilder.toString(), GithubFollower[].class);
+            followers = new ArrayList<>();
+            followers.addAll(Arrays.asList(followerArray));
 
             if (isCancelled()) {
                 return null;
             }
-        } catch (IOException | JSONException e) {
+        } catch (IOException e) {
             Log.e(TAG, e.getLocalizedMessage());
         }
 
-        return jsonArray;
+        return followers;
     }
 
-    @Override
-    protected void onCancelled(JSONArray jsonArray) {
-        super.onCancelled(jsonArray);
-        Log.d(TAG, "AsyncTask cancelled");
-    }
 
     @Override
-    protected void onPostExecute(JSONArray jsonArray) {
-        super.onPostExecute(jsonArray);
-        if (jsonArray == null) {
-            Log.e(TAG, "Resulting JSON is null");
+    protected void onPostExecute(ArrayList<GithubFollower> githubFollowers) {
+        super.onPostExecute(githubFollowers);
 
-            if (mListener != null) {
-                mListener.onGithubAccountRetrieved(null);
-            }
-        } else {
-            for (int i = 0; i < jsonArray.length(); i++) {
-                try {
-                    JSONObject subscription = jsonArray.getJSONObject(i);
-                    JSONObject owner = subscription.getJSONObject("owner");
-
-                    Log.d(TAG, owner.getString("login") + " owns " + subscription.getString("name"));
-                } catch (JSONException e) {
-                    Log.e(TAG, e.getLocalizedMessage());
-                }
-            }
-            Log.d(TAG, jsonArray.toString());
-
-            if (mListener != null) {
-                mListener.onGithubAccountRetrieved(jsonArray);
-            }
-        }
+        mListener.onGithubFollowersRetrieved(githubFollowers);
     }
 }

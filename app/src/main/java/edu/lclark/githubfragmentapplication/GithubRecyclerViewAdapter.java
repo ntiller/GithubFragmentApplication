@@ -7,6 +7,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
+
+import java.util.ArrayList;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
@@ -15,6 +19,11 @@ import butterknife.ButterKnife;
  */
 public class GithubRecyclerViewAdapter extends RecyclerView.Adapter<GithubRecyclerViewAdapter.GithubViewHolder> {
 
+    private ArrayList<GithubFollower> mFollowers;
+
+    public GithubRecyclerViewAdapter(ArrayList<GithubFollower> followers) {
+        mFollowers = followers;
+    }
 
     @Override
     public GithubViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -25,12 +34,24 @@ public class GithubRecyclerViewAdapter extends RecyclerView.Adapter<GithubRecycl
 
     @Override
     public void onBindViewHolder(GithubViewHolder holder, int position) {
+        GithubFollower follower = mFollowers.get(position);
+        holder.textView.setText(follower.getLogin());
 
+        Picasso.with(holder.imageView.getContext())
+                .load(follower.getAvatar_url())
+                .fit()
+                .centerInside()
+                .into(holder.imageView);
+    }
+
+    public void setFollowers(ArrayList<GithubFollower> followers) {
+        mFollowers = followers;
+        notifyItemRangeInserted(0, mFollowers.size());
     }
 
     @Override
     public int getItemCount() {
-        return 0;
+        return mFollowers == null ? 0 : mFollowers.size();
     }
 
     static class GithubViewHolder extends RecyclerView.ViewHolder {
