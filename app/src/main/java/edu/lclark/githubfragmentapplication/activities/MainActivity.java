@@ -14,11 +14,11 @@ import android.widget.FrameLayout;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import edu.lclark.githubfragmentapplication.R;
-import edu.lclark.githubfragmentapplication.fragments.FollowerFragment;
+import edu.lclark.githubfragmentapplication.fragments.UserFragment;
 import edu.lclark.githubfragmentapplication.fragments.MainActivityFragment;
-import edu.lclark.githubfragmentapplication.models.GithubFollower;
+import edu.lclark.githubfragmentapplication.models.GithubUser;
 
-public class MainActivity extends AppCompatActivity implements MainActivityFragment.FollowerSelectedListener {
+public class MainActivity extends AppCompatActivity implements MainActivityFragment.FollowerSelectedListener, UserFragment.UserListener {
 
     @Bind(R.id.activity_main_framelayout)
     FrameLayout mFrameLayout;
@@ -44,7 +44,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.activity_main_framelayout, new MainActivityFragment());
-        transaction.addToBackStack(null);
         transaction.commit();
 
 
@@ -73,11 +72,18 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
     }
 
     @Override
-    public void onFollowerSelected(GithubFollower follower) {
+    public void onFollowerSelected(GithubUser follower) {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.activity_main_framelayout, FollowerFragment.newInstance(follower));
+        transaction.replace(R.id.activity_main_framelayout, UserFragment.newInstance(follower));
         transaction.addToBackStack(null);
         transaction.commit();
+    }
 
+    @Override
+    public void onUserFollowerButtonClicked(GithubUser user) {
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.activity_main_framelayout, MainActivityFragment.newInstance(user));
+        transaction.addToBackStack(null);
+        transaction.commit();
     }
 }

@@ -14,17 +14,20 @@ import java.util.ArrayList;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import edu.lclark.githubfragmentapplication.activities.MainActivity;
-import edu.lclark.githubfragmentapplication.models.GithubFollower;
 import edu.lclark.githubfragmentapplication.GithubRecyclerViewAdapter;
 import edu.lclark.githubfragmentapplication.NetworkAsyncTask;
 import edu.lclark.githubfragmentapplication.R;
+import edu.lclark.githubfragmentapplication.activities.MainActivity;
+import edu.lclark.githubfragmentapplication.models.GithubUser;
 
 
 /**
  * A placeholder fragment containing a simple view.
  */
-public class MainActivityFragment extends Fragment implements NetworkAsyncTask.GithubListener, GithubRecyclerViewAdapter.RowClickListener {
+public class MainActivityFragment extends Fragment implements NetworkAsyncTask.GithubListener,
+        GithubRecyclerViewAdapter.RowClickListener {
+
+    public static final String ARG_USER = "MainActivityFragment.User";
 
     @Bind(R.id.fragment_main_recyclerview)
     RecyclerView mRecyclerView;
@@ -32,13 +35,23 @@ public class MainActivityFragment extends Fragment implements NetworkAsyncTask.G
     NetworkAsyncTask mAsyncTask;
     GithubRecyclerViewAdapter mAdapter;
 
-    ArrayList<GithubFollower> mFollowers;
+    ArrayList<GithubUser> mFollowers;
     private FollowerSelectedListener mListener;
+
+    private String mUserLogin = "ntiller";
 
 
 
     public interface FollowerSelectedListener {
-        void onFollowerSelected(GithubFollower follower);
+        void onFollowerSelected(GithubUser follower);
+    }
+
+    public static MainActivityFragment newInstance(GithubUser user) {
+        MainActivityFragment fragment = new MainActivityFragment();
+        Bundle args = new Bundle();
+        args.putParcelable(ARG_USER, user);
+        fragment.setArguments(args);
+        return fragment;
     }
 
     @Override
@@ -50,7 +63,15 @@ public class MainActivityFragment extends Fragment implements NetworkAsyncTask.G
 
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
+        if (getArguments() != null) {
+            GithubUser user = getArguments().getParcelable(ARG_USER);
+            if (user != null) {
+                mUserLogin = user.getLogin();
+            }
+        }
 
+
+        getActivity().setTitle(getString(R.string.follower_list_title, mUserLogin));
         mAdapter = new GithubRecyclerViewAdapter(mFollowers, this);
         mRecyclerView.setAdapter(mAdapter);
 
@@ -68,7 +89,7 @@ public class MainActivityFragment extends Fragment implements NetworkAsyncTask.G
 
         if (mAsyncTask == null && (mFollowers == null || mFollowers.isEmpty())) {
             mAsyncTask = new NetworkAsyncTask(this);
-            mAsyncTask.execute("ntiller");
+            mAsyncTask.execute(mUserLogin);
         }
     }
 
@@ -82,7 +103,7 @@ public class MainActivityFragment extends Fragment implements NetworkAsyncTask.G
     }
 
     @Override
-    public void onGithubFollowersRetrieved(@Nullable ArrayList<GithubFollower> followers) {
+    public void onGithubFollowersRetrieved(@Nullable ArrayList<GithubUser> followers) {
         mFollowers = followers;
         mAdapter.setFollowers(followers);
     }

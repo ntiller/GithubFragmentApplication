@@ -6,7 +6,7 @@ import android.os.Parcelable;
 /**
  * Created by ntille on 2/25/16.
  */
-public class GithubFollower implements Parcelable {
+public class GithubUser implements Parcelable {
 
 
     /**
@@ -47,7 +47,7 @@ public class GithubFollower implements Parcelable {
     private String type;
     private boolean site_admin;
 
-    protected GithubFollower(Parcel in) {
+    protected GithubUser(Parcel in) {
         login = in.readString();
         id = in.readInt();
         avatar_url = in.readString();
@@ -93,15 +93,15 @@ public class GithubFollower implements Parcelable {
         return 0;
     }
 
-    public static final Creator<GithubFollower> CREATOR = new Creator<GithubFollower>() {
+    public static final Creator<GithubUser> CREATOR = new Creator<GithubUser>() {
         @Override
-        public GithubFollower createFromParcel(Parcel in) {
-            return new GithubFollower(in);
+        public GithubUser createFromParcel(Parcel in) {
+            return new GithubUser(in);
         }
 
         @Override
-        public GithubFollower[] newArray(int size) {
-            return new GithubFollower[size];
+        public GithubUser[] newArray(int size) {
+            return new GithubUser[size];
         }
     };
 

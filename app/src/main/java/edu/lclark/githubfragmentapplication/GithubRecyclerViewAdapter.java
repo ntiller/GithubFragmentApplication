@@ -1,6 +1,7 @@
 package edu.lclark.githubfragmentapplication;
 
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,7 +14,7 @@ import java.util.ArrayList;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import edu.lclark.githubfragmentapplication.models.GithubFollower;
+import edu.lclark.githubfragmentapplication.models.GithubUser;
 
 /**
  * Created by ntille on 2/23/16.
@@ -21,13 +22,13 @@ import edu.lclark.githubfragmentapplication.models.GithubFollower;
 public class GithubRecyclerViewAdapter extends RecyclerView.Adapter<GithubRecyclerViewAdapter.GithubViewHolder> {
 
     private RowClickListener mListener;
-    private ArrayList<GithubFollower> mFollowers;
+    private ArrayList<GithubUser> mFollowers;
 
     public interface RowClickListener {
         void onRowClicked(int position);
     }
 
-    public GithubRecyclerViewAdapter(ArrayList<GithubFollower> followers, RowClickListener listener) {
+    public GithubRecyclerViewAdapter(ArrayList<GithubUser> followers, RowClickListener listener) {
         mFollowers = followers;
         mListener = listener;
     }
@@ -36,12 +37,13 @@ public class GithubRecyclerViewAdapter extends RecyclerView.Adapter<GithubRecycl
     public GithubViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         View view = inflater.inflate(R.layout.row_account, parent, false);
+        Log.d("GHRecyclerViewAdapter", "In onCreateViewHolder");
         return new GithubViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(final GithubViewHolder holder, int position) {
-        GithubFollower follower = mFollowers.get(position);
+        GithubUser follower = mFollowers.get(position);
         holder.textView.setText(follower.getLogin());
 
         Picasso.with(holder.imageView.getContext())
@@ -58,12 +60,12 @@ public class GithubRecyclerViewAdapter extends RecyclerView.Adapter<GithubRecycl
         });
     }
 
-    public void setFollowers(ArrayList<GithubFollower> followers) {
+    public void setFollowers(ArrayList<GithubUser> followers) {
         mFollowers = followers;
         notifyItemRangeInserted(0, mFollowers.size());
     }
 
-    public GithubFollower getItem(int position) {
+    public GithubUser getItem(int position) {
         return mFollowers == null ? null : mFollowers.get(position);
     }
 

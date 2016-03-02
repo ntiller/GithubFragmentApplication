@@ -14,19 +14,19 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import edu.lclark.githubfragmentapplication.models.GithubFollower;
+import edu.lclark.githubfragmentapplication.models.GithubUser;
 
 /**
  * Created by ntille on 2/16/16.
  */
-public class NetworkAsyncTask extends AsyncTask<String, Integer, ArrayList<GithubFollower>> {
+public class NetworkAsyncTask extends AsyncTask<String, Integer, ArrayList<GithubUser>> {
 
 
     public static final String TAG = NetworkAsyncTask.class.getSimpleName();
     private final GithubListener mListener;
 
     public interface GithubListener {
-        void onGithubFollowersRetrieved(@Nullable ArrayList<GithubFollower> followers);
+        void onGithubFollowersRetrieved(@Nullable ArrayList<GithubUser> followers);
     }
 
     public NetworkAsyncTask(GithubListener listener) {
@@ -40,10 +40,10 @@ public class NetworkAsyncTask extends AsyncTask<String, Integer, ArrayList<Githu
     }
 
     @Override
-    protected ArrayList<GithubFollower> doInBackground(String... params) {
+    protected ArrayList<GithubUser> doInBackground(String... params) {
 
         StringBuilder responseBuilder = new StringBuilder();
-        ArrayList<GithubFollower> followers = null;
+        ArrayList<GithubUser> followers = null;
         if (params.length == 0) {
             return null;
         }
@@ -70,7 +70,7 @@ public class NetworkAsyncTask extends AsyncTask<String, Integer, ArrayList<Githu
                 }
             }
 
-            GithubFollower[] followerArray = new Gson().fromJson(responseBuilder.toString(), GithubFollower[].class);
+            GithubUser[] followerArray = new Gson().fromJson(responseBuilder.toString(), GithubUser[].class);
             followers = new ArrayList<>();
             followers.addAll(Arrays.asList(followerArray));
 
@@ -86,9 +86,9 @@ public class NetworkAsyncTask extends AsyncTask<String, Integer, ArrayList<Githu
 
 
     @Override
-    protected void onPostExecute(ArrayList<GithubFollower> githubFollowers) {
-        super.onPostExecute(githubFollowers);
+    protected void onPostExecute(ArrayList<GithubUser> githubUsers) {
+        super.onPostExecute(githubUsers);
 
-        mListener.onGithubFollowersRetrieved(githubFollowers);
+        mListener.onGithubFollowersRetrieved(githubUsers);
     }
 }
